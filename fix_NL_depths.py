@@ -22,7 +22,7 @@ prefix = '{http://www.mbfbioscience.com/2007/neurolucida}'
 
 
 def fix_depth(stack):
-    xmlfile = '/home/asya/Documents/Neurolucida_utilities/%s.xml' % stack
+    xmlfile = '%s.xml' % stack
     tree = ET.parse(xmlfile)
     root = tree.getroot()
     numsections_1 = len(list(root[1]))-1
