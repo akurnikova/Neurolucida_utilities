@@ -17,6 +17,7 @@ global prefix
 
 stack1 = 'RV4_L_align'
 stack2 = 'RV4_R_align'
+stack = 'RV19'
 ET.register_namespace('', 'http://www.mbfbioscience.com/2007/neurolucida')
 prefix = '{http://www.mbfbioscience.com/2007/neurolucida}'
 
@@ -106,8 +107,8 @@ def resort_sections(stack):
             new_section_id = map_new_section_dict[pt.get('sid')]
             pt.set('sid',new_section_id)
             
-    ## process dendrites
-    for item in root.findall(prefix+'dendrite'):
+    ## process trees
+    for item in root.findall(prefix+'tree'):
         for pt in item.findall(prefix+'point'):
             new_section_id = map_new_section_dict[pt.get('sid')]
             pt.set('sid',new_section_id)
@@ -117,6 +118,39 @@ def resort_sections(stack):
 
 
 ## Code to correct z-depth
+def fix_section_tops(stack):
+## recalculates stack 'tops' based on section thicknesses
+    xmlfile = '/home/asya/Documents/Neurolucida_utilities/%s.xml' % stack
+    tree = ET.parse(xmlfile)
+    root = tree.getroot()
+    
+    section_sid_list = list()
+    section_z_list = list()
+    section_thickness_list = list()
+    for item in root[1].findall(prefix+'section'):
+        section_sid_list.append(item.get('sid'))
+        section_z_list.append(float(item.get('top')))
+        section_thickness_list.append(float(item.get('cutthickness')))
+    
+    section_z = np.asarray(section_z_list)
+    section_thicknesses = np.asarray(section_thickness_list)
+    
+    idx_center = np.where(section_z ==0)[0][0]
+    
+    for i in range(idx_center+1,len(section_thicknesses)):
+        section_z[i] = section_z[i-1]+section_thicknesses[i]
+    for i in range(idx_center-1,-1,-1):
+        section_z[i] = section_z[i+1]-section_thicknesses[i]
+    
+    dict_z_to_sid = dict(zip(section_sid_list, section_z))
+    ## process list of sections
+    for item in root[1].findall(prefix+'section'):
+        new_top = dict_z_to_sid[item.get('sid')]
+        item.set('top',str(int(new_top)))
+    tree.write(stack+'_corrected.xml')
+    with open(stack+'_corrected.xml', 'a') as f:
+        f.write("\n\n")
+        
 def fix_depth(stack):
     xmlfile = '/home/asya/Documents/Neurolucida_utilities/%s.xml' % stack
     tree = ET.parse(xmlfile)
@@ -142,7 +176,7 @@ def fix_depth(stack):
                 pt.set('z',"{0:.2f}".format(float(section_z_dict[sid])))
     
     ## process dendrites
-    for item in root.findall(prefix+'dendrite'):
+    for item in root.findall(prefix+'tree'):
             for pt in item.findall(prefix+'point'):
                 sid = pt.get('sid')
                 pt.set('z',"{0:.2f}".format(float(section_z_dict[sid])))    
@@ -151,5 +185,7 @@ def fix_depth(stack):
     with open(stack+'_corrected.xml', 'a') as f:
         f.write("\n\n")
     
-merge_stacks(stack1,stack2)
-fix_depth(stack1+'+'+stack2+'_resorted')
+#merge_stacks(stack1,stack2)
+#fix_depth(stack1+'+'+stack2+'_resorted')
+fix_section_tops(stack)
+fix_depth(stack+'_corrected')
