@@ -26,4 +26,8 @@ To fix depths of structures - aka assign all to value of section 'top' run:
   2) cd C:\Users\dklab\Desktop\Neurolucida_utilities
   3) C:\Python27\python.exe C:\Users\dklab\Desktop\Neurolucida_utilities\fix_NL_depths.py stack
   
-  Stacy 04/2018
+ To fix 'tops' of sections - aka reassign all the values of the 'tops' of sections as the top of previous section + the thickness:
+
+  python fix_NL_tops.py stack
+  
+  Stacy 05/2018
