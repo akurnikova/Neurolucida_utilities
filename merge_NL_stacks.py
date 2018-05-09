@@ -21,11 +21,11 @@ prefix = '{http://www.mbfbioscience.com/2007/neurolucida}'
 def merge_stacks(stack1,stack2):
     ## Code to combine across files:
         
-    xmlfile1 = '%s.xml' % stack1
+    xmlfile1 = '/home/asya/Documents/Neurolucida_utilities/%s.xml' % stack1
     tree1 = ET.parse(xmlfile1)
     root1 = tree1.getroot()
     
-    xmlfile2 = '%s.xml' % stack2
+    xmlfile2 = '/home/asya/Documents/Neurolucida_utilities/%s.xml' % stack2
     tree2 = ET.parse(xmlfile2)
     root2 = tree2.getroot()
     
@@ -70,7 +70,7 @@ def merge_stacks(stack1,stack2):
 
 
 def resort_sections(stack):
-    xmlfile = '%s.xml' % stack
+    xmlfile = '/home/asya/Documents/Neurolucida_utilities/%s.xml' % stack
     tree = ET.parse(xmlfile)
     root = tree.getroot()
     
@@ -105,7 +105,7 @@ def resort_sections(stack):
             pt.set('sid',new_section_id)
             
     ## process dendrites
-    for item in root.findall(prefix+'dendrite'):
+    for item in root.findall(prefix+'tree'):
         for pt in item.findall(prefix+'point'):
             new_section_id = map_new_section_dict[pt.get('sid')]
             pt.set('sid',new_section_id)

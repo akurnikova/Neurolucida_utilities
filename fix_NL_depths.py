@@ -15,14 +15,14 @@ Created on Tue Apr 24 14:54:29 2018
 import xml.etree.ElementTree as ET
 global prefix
 import sys
+import numpy as np
 
 
 ET.register_namespace('', 'http://www.mbfbioscience.com/2007/neurolucida')
 prefix = '{http://www.mbfbioscience.com/2007/neurolucida}'
 
-
 def fix_depth(stack):
-    xmlfile = '%s.xml' % stack
+    xmlfile = '/home/asya/Documents/Neurolucida_utilities/%s.xml' % stack
     tree = ET.parse(xmlfile)
     root = tree.getroot()
     numsections_1 = len(list(root[1]))-1
@@ -46,7 +46,7 @@ def fix_depth(stack):
                 pt.set('z',"{0:.2f}".format(float(section_z_dict[sid])))
     
     ## process dendrites
-    for item in root.findall(prefix+'dendrite'):
+    for item in root.findall(prefix+'tree'):
             for pt in item.findall(prefix+'point'):
                 sid = pt.get('sid')
                 pt.set('z',"{0:.2f}".format(float(section_z_dict[sid])))    
